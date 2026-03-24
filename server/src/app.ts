@@ -56,3 +56,4 @@ app.use("/internal", internalRoutes);
 app.use(errorMiddleware);
 
 export { app };
+export default app;
