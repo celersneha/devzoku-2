@@ -1,4 +1,4 @@
-import { hackathonTeamEmailQueue } from "../queues/queue";
+import { getHackathonTeamEmailQueue, closeQueue } from "../queues/queue";
 import { teamRegToHackathonTemplate } from "../templates/teamRegToHackathon";
 import { hackathonResultAnnouncementTemplate } from "../templates/HackathonWinnerAnnouncement";
 import { ApiError } from "../utils/ApiError";
@@ -49,7 +49,8 @@ const processEmailQueue = asyncHandler(async (req, res) => {
     ? 100
     : Math.min(Math.max(batchSizeRaw, 1), 500);
 
-  const jobs = await hackathonTeamEmailQueue.getWaiting(0, batchSize - 1);
+  const queue = getHackathonTeamEmailQueue();
+  const jobs = await queue.getWaiting(0, batchSize - 1);
 
   let processed = 0;
   let failed = 0;
@@ -103,7 +104,9 @@ const processEmailQueue = asyncHandler(async (req, res) => {
     }
   }
 
-  const queued = await hackathonTeamEmailQueue.count();
+  const queue2 = getHackathonTeamEmailQueue();
+  const queued = await queue2.count();
+  await closeQueue();
 
   return res.status(200).json(
     new ApiResponse(

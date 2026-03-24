@@ -10,7 +10,7 @@ import {
   hackathons,
   teamHackathons,
 } from "../db/schema/hackathon.schema";
-import { hackathonTeamEmailQueue } from "../queues/queue";
+import { getHackathonTeamEmailQueue } from "../queues/queue";
 import formatDate from "../utils/formatDate";
 import { organizers } from "../db/schema/organizer.schema";
 import hackathonStatusChecker from "../utils/hackathonStatusChecker";
@@ -216,7 +216,7 @@ const applyToHackathon = asyncHandler(async (req, res) => {
       // });
 
       // add to queue
-      hackathonTeamEmailQueue.add("team-registration", {
+      getHackathonTeamEmailQueue().add("team-registration", {
         email: member.email,
         memberName: member.name,
         teamName: team[0]?.name ?? "",
@@ -1100,7 +1100,7 @@ const markWinners = asyncHandler(async (req, res) => {
       // });
 
       //add to queue
-      return hackathonTeamEmailQueue.add("winner-result", {
+      return getHackathonTeamEmailQueue().add("winner-result", {
         email: captain.email,
         captainName: captain.name,
         teamName: captain.teamName,

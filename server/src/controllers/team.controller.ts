@@ -9,7 +9,7 @@ import { teamMembers, teams } from "../db/schema/team.schema";
 import { users } from "../db/schema/user.schema";
 import { io } from "..";
 import { hackathons, teamHackathons } from "../db/schema/hackathon.schema";
-import { hackathonTeamEmailQueue } from "../queues/queue";
+import { getHackathonTeamEmailQueue } from "../queues/queue";
 import formatDate from "../utils/formatDate";
 import { organizers } from "../db/schema/organizer.schema";
 
@@ -25,7 +25,7 @@ const createTeam = asyncHandler(async (req, res) => {
     if (user?.role !== "developer") {
       throw new ApiError(
         403,
-        "Access denied. Only developers can create teams."
+        "Access denied. Only developers can create teams.",
       );
     }
 
@@ -80,7 +80,7 @@ const createTeam = asyncHandler(async (req, res) => {
 
     throw new ApiError(
       error.statusCode || 500,
-      error.message || "Something went wrong while creating the team"
+      error.message || "Something went wrong while creating the team",
     );
   }
 });
@@ -177,8 +177,8 @@ const getJoinedTeams = asyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         joinedTeamsWithMembers,
-        "Joined teams fetched successfully"
-      )
+        "Joined teams fetched successfully",
+      ),
     );
 });
 
@@ -217,7 +217,7 @@ const viewAllTeams = asyncHandler(async (req, res) => {
     .where(
       joinedTeamIds.length > 0
         ? not(inArray(teams.id, joinedTeamIds))
-        : undefined
+        : undefined,
     )
     .orderBy(desc(teams.createdAt))
     .execute();
@@ -273,8 +273,8 @@ const viewAllTeams = asyncHandler(async (req, res) => {
         new ApiResponse(
           200,
           { ...particularTeam, team_members: teamMembersList },
-          "Particular team fetched successfully"
-        )
+          "Particular team fetched successfully",
+        ),
       );
   }
 
@@ -327,7 +327,7 @@ const sendInvitation = asyncHandler(async (req, res) => {
 
   // check if the user has already sent an invitation to the team
   const existingInvitation = existingTeam[0]?.pendingInvitesFromUsers?.includes(
-    user.id
+    user.id,
   );
 
   if (existingInvitation) {
@@ -389,7 +389,7 @@ const sendInvitation = asyncHandler(async (req, res) => {
     if (!savedNotificationInTeamMembers) {
       throw new ApiError(
         500,
-        "Failed to save notification in the database for team member"
+        "Failed to save notification in the database for team member",
       );
     }
   }
@@ -400,8 +400,8 @@ const sendInvitation = asyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         sendInvitation[0],
-        "Invitation forwarded successfully"
-      )
+        "Invitation forwarded successfully",
+      ),
     );
 });
 
@@ -444,8 +444,8 @@ const fetchPendingInvitesAndAcceptThem = asyncHandler(async (req, res) => {
         new ApiResponse(
           200,
           { pendingUsers, teamName: team.name },
-          "Pending invites fetched successfully"
-        )
+          "Pending invites fetched successfully",
+        ),
       );
   }
 
@@ -501,7 +501,7 @@ const fetchPendingInvitesAndAcceptThem = asyncHandler(async (req, res) => {
 
   // Remove user from pending invites
   const updatedPendingInvites = pendingUserIds.filter(
-    (id) => id !== (pendingUserId as string)
+    (id) => id !== (pendingUserId as string),
   );
 
   const removedPendingInvite = await db
@@ -524,7 +524,7 @@ const fetchPendingInvitesAndAcceptThem = asyncHandler(async (req, res) => {
 
   const updatedCaptainNotifications =
     captain?.notifications?.filter(
-      (n) => n.type !== "invitation-sent" || n.teamId !== (teamId as string)
+      (n) => n.type !== "invitation-sent" || n.teamId !== (teamId as string),
     ) || [];
 
   const updatedCaptainNotificationInDb = await db
@@ -539,8 +539,8 @@ const fetchPendingInvitesAndAcceptThem = asyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         addedPendingUser,
-        "User added to the team successfully"
-      )
+        "User added to the team successfully",
+      ),
     );
 });
 
@@ -567,8 +567,8 @@ const fetchSentInvitations = asyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         sentInvitations,
-        "Sent invitations fetched successfully"
-      )
+        "Sent invitations fetched successfully",
+      ),
     );
 });
 
@@ -608,7 +608,7 @@ const leaveTeam = asyncHandler(async (req, res) => {
   if (userInActiveHackathon.length > 0) {
     throw new ApiError(
       400,
-      "You cannot leave the team while participating in an active hackathon"
+      "You cannot leave the team while participating in an active hackathon",
     );
   }
 
@@ -646,8 +646,8 @@ const leaveTeam = asyncHandler(async (req, res) => {
         new ApiResponse(
           200,
           null,
-          "Left team successfully and team deleted as no members left"
-        )
+          "Left team successfully and team deleted as no members left",
+        ),
       );
   }
 
