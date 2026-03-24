@@ -15,7 +15,7 @@
   "crons": [
     {
       "path": "/hackathon/embed-hackathons",
-      "schedule": "0 */6 * * *"
+      "schedule": "0 2 * * *"
     }
   ]
 }
