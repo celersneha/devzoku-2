@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import { eq } from "drizzle-orm";
-import { db } from "../db";
+import { db } from "../db/index.js";
 import { developers } from "../db/schema/developer.schema.js";
 import { organizers } from "../db/schema/organizer.schema.js";
 import { ApiError } from "../utils/ApiError.js";
