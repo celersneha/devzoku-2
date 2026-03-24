@@ -1,0 +1,27 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "bun install --frozen-lockfile",
+  "buildCommand": "bun run build",
+  "functions": {
+    "api/index.ts": {
+      "maxDuration": 300,
+      "memory": 3008
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/api/index.ts"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/internal/process-email-queue",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/hackathon/embed-hackathons",
+      "schedule": "0 */6 * * *"
+    }
+  ]
+}

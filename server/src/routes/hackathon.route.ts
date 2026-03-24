@@ -19,7 +19,7 @@ router.post(
   "/create-hackathon",
   verifyJWT,
   upload.single("poster"),
-  createHackathon
+  createHackathon,
 );
 router.get("/view-all-hackathons-auth", verifyJWT, viewAllHackathons);
 router.get("/hackathon-auth/:id", verifyJWT, viewHackathonById);
@@ -32,5 +32,6 @@ router.get("/upcoming-hackathons", getUpcomingHackathons);
 
 //cron routes
 router.post("/embed-hackathons", embedHackathons);
+router.get("/embed-hackathons", embedHackathons);
 
 export default router;

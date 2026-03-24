@@ -24,8 +24,8 @@
   },
   "scripts": {
     "dev": "bun --watch src/index.ts",
-    "build": "bun build ./src/index.ts --outdir ./dist --target bun",
-    "start": "bun dist/index.js",
+    "build": "bun build ./api/index.ts --outdir ./dist --target bun",
+    "start": "bun src/index.ts",
     "db:push": "bunx drizzle-kit push --config=drizzle.config.ts"
   },
   "dependencies": {

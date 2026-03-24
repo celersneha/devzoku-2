@@ -111,8 +111,8 @@ const applyToHackathon = asyncHandler(async (req, res) => {
     .where(
       and(
         eq(teamHackathons.teamId, teamId),
-        eq(teamHackathons.hackathonId, hackathonId)
-      )
+        eq(teamHackathons.hackathonId, hackathonId),
+      ),
     )
     .limit(1)
     .execute();
@@ -143,16 +143,16 @@ const applyToHackathon = asyncHandler(async (req, res) => {
         eq(teamHackathons.hackathonId, hackathonId),
         inArray(
           teamMembers.userId,
-          teamMember.map((m) => m.userId)
-        )
-      )
+          teamMember.map((m) => m.userId),
+        ),
+      ),
     )
     .execute();
 
   if (appliedMembers.length > 0) {
     throw new ApiError(
       400,
-      "Some team members have already applied to this hackathon with another team"
+      "Some team members have already applied to this hackathon with another team",
     );
   }
 
@@ -196,42 +196,46 @@ const applyToHackathon = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Organizer not found");
   }
 
-  emails.forEach((member) => {
-    // sendTeamRegistrationEmail({
-    //   email: member.email,
-    //   memberName: member.name,
-    //   teamName: team[0]?.name ?? "",
-    //   hackathonName: hackathon[0]?.title ?? "",
-    //   hackathonStartDate: formatDate(
-    //     hackathon[0]?.startTime
-    //       ? hackathon[0].startTime.toISOString()
-    //       : undefined
-    //   ),
-    //   hackathonEndDate: formatDate(
-    //     hackathon[0]?.endTime ? hackathon[0].endTime.toISOString() : undefined
-    //   ),
-    //   organizationName: organizer[0]?.name || "",
-    //   organizationEmail: organizer[0]?.email ?? "",
-    // });
+  await Promise.all(
+    emails.map((member) =>
+      // sendTeamRegistrationEmail({
+      //   email: member.email,
+      //   memberName: member.name,
+      //   teamName: team[0]?.name ?? "",
+      //   hackathonName: hackathon[0]?.title ?? "",
+      //   hackathonStartDate: formatDate(
+      //     hackathon[0]?.startTime
+      //       ? hackathon[0].startTime.toISOString()
+      //       : undefined
+      //   ),
+      //   hackathonEndDate: formatDate(
+      //     hackathon[0]?.endTime ? hackathon[0].endTime.toISOString() : undefined
+      //   ),
+      //   organizationName: organizer[0]?.name || "",
+      //   organizationEmail: organizer[0]?.email ?? "",
+      // });
 
-    // add to queue
-    hackathonTeamEmailQueue.add("team-registration", {
-      email: member.email,
-      memberName: member.name,
-      teamName: team[0]?.name ?? "",
-      hackathonName: hackathon[0]?.title ?? "",
-      hackathonStartDate: formatDate(
-        hackathon[0]?.startTime
-          ? hackathon[0].startTime.toISOString()
-          : undefined
-      ),
-      hackathonEndDate: formatDate(
-        hackathon[0]?.endTime ? hackathon[0].endTime.toISOString() : undefined
-      ),
-      organizationName: organizer[0]?.name || "",
-      organizationEmail: organizer[0]?.email ?? "",
-    });
-  });
+      // add to queue
+      hackathonTeamEmailQueue.add("team-registration", {
+        email: member.email,
+        memberName: member.name,
+        teamName: team[0]?.name ?? "",
+        hackathonName: hackathon[0]?.title ?? "",
+        hackathonStartDate: formatDate(
+          hackathon[0]?.startTime
+            ? hackathon[0].startTime.toISOString()
+            : undefined,
+        ),
+        hackathonEndDate: formatDate(
+          hackathon[0]?.endTime
+            ? hackathon[0].endTime.toISOString()
+            : undefined,
+        ),
+        organizationName: organizer[0]?.name || "",
+        organizationEmail: organizer[0]?.email ?? "",
+      }),
+    ),
+  );
 
   // add user interaction to all the team members
   for (const member of teamMember) {
@@ -245,9 +249,9 @@ const applyToHackathon = asyncHandler(async (req, res) => {
             eq(userHackathonViews.hackathonId, hackathon[0].id),
             gt(
               userHackathonViews.viewedAt,
-              new Date(Date.now() - 10 * 60 * 1000)
-            )
-          )
+              new Date(Date.now() - 10 * 60 * 1000),
+            ),
+          ),
         )
         .limit(1)
         .execute();
@@ -291,7 +295,7 @@ const applyToHackathon = asyncHandler(async (req, res) => {
   return res
     .status(201)
     .json(
-      new ApiResponse(201, newApplication, "Applied to hackathon successfully")
+      new ApiResponse(201, newApplication, "Applied to hackathon successfully"),
     );
 });
 
@@ -363,8 +367,8 @@ const viewAllHackathons = asyncHandler(async (req, res) => {
         sql`${hackathons.tags} && ${sql.raw(
           `ARRAY[${tagArr
             .map((t) => `'${t.replace(/'/g, "''")}'`)
-            .join(",")}]::varchar[]`
-        )}`
+            .join(",")}]::varchar[]`,
+        )}`,
       );
     }
   }
@@ -373,13 +377,13 @@ const viewAllHackathons = asyncHandler(async (req, res) => {
   if (duration) {
     if (duration === "gt72") {
       whereClauses.push(
-        sql`EXTRACT(EPOCH FROM (${hackathons.endTime} - ${hackathons.startTime}))/3600 > 72`
+        sql`EXTRACT(EPOCH FROM (${hackathons.endTime} - ${hackathons.startTime}))/3600 > 72`,
       );
     } else {
       whereClauses.push(
         sql`EXTRACT(EPOCH FROM (${hackathons.endTime} - ${
           hackathons.startTime
-        }))/3600 <= ${Number(duration)}`
+        }))/3600 <= ${Number(duration)}`,
       );
     }
   }
@@ -413,7 +417,7 @@ const viewAllHackathons = asyncHandler(async (req, res) => {
       new Date(hack.registrationStart ?? ""),
       new Date(hack.registrationEnd ?? ""),
       new Date(hack.startTime ?? ""),
-      new Date(hack.endTime ?? "")
+      new Date(hack.endTime ?? ""),
     );
     return { ...hack, status: statusValue };
   });
@@ -422,7 +426,7 @@ const viewAllHackathons = asyncHandler(async (req, res) => {
   let filteredHackathons = hackathonsWithStatus;
   if (status && status !== "all") {
     filteredHackathons = hackathonsWithStatus.filter(
-      (h) => h.status === status
+      (h) => h.status === status,
     );
   }
 
@@ -460,8 +464,8 @@ const viewAllHackathons = asyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         filteredHackathons,
-        "Hackathons fetched successfully"
-      )
+        "Hackathons fetched successfully",
+      ),
     );
 });
 
@@ -500,7 +504,7 @@ const viewHackathonById = asyncHandler(async (req, res) => {
     new Date(hackathon?.registrationStart ?? ""),
     new Date(hackathon?.registrationEnd ?? ""),
     new Date(hackathon?.startTime ?? ""),
-    new Date(hackathon?.endTime ?? "")
+    new Date(hackathon?.endTime ?? ""),
   );
 
   if (!hackathon) {
@@ -543,8 +547,11 @@ const viewHackathonById = asyncHandler(async (req, res) => {
         and(
           eq(userHackathonViews.userId, devId),
           eq(userHackathonViews.hackathonId, hackathon.id),
-          gt(userHackathonViews.viewedAt, new Date(Date.now() - 10 * 60 * 1000))
-        )
+          gt(
+            userHackathonViews.viewedAt,
+            new Date(Date.now() - 10 * 60 * 1000),
+          ),
+        ),
       )
       .limit(1)
       .execute();
@@ -599,8 +606,8 @@ const viewHackathonById = asyncHandler(async (req, res) => {
             teamsApplied: [],
             status: statusValue,
           },
-          "Hackathon fetched successfully"
-        )
+          "Hackathon fetched successfully",
+        ),
       );
     }
 
@@ -614,8 +621,8 @@ const viewHackathonById = asyncHandler(async (req, res) => {
           teamsApplied,
           status: statusValue,
         },
-        "Hackathon fetched successfully"
-      )
+        "Hackathon fetched successfully",
+      ),
     );
   }
   // fetch total teams participating in this hackathon
@@ -635,8 +642,8 @@ const viewHackathonById = asyncHandler(async (req, res) => {
         status: statusValue,
         totalTeams: totalTeams[0]?.count ? totalTeams[0].count : 0,
       },
-      "Hackathon fetched successfully"
-    )
+      "Hackathon fetched successfully",
+    ),
   );
 });
 
@@ -653,7 +660,7 @@ const createHackathon = asyncHandler(async (req, res) => {
   if (user.role !== "organizer")
     throw new ApiError(
       403,
-      "Access denied. Only organizers can create hackathons."
+      "Access denied. Only organizers can create hackathons.",
     );
 
   //existing hackathon check
@@ -761,12 +768,12 @@ const createHackathon = asyncHandler(async (req, res) => {
         if (phase.startTime < now || phase.endTime < now)
           throw new ApiError(
             400,
-            "Phase start time or end time must be in the future"
+            "Phase start time or end time must be in the future",
           );
         if (phase.startTime < regStart || phase.endTime > hackEnd)
           throw new ApiError(
             400,
-            "Each phase's start and end time must be within the hackathon's start and end time"
+            "Each phase's start and end time must be within the hackathon's start and end time",
           );
       }
 
@@ -829,7 +836,7 @@ const embedHackathons = asyncHandler(async (req, res) => {
     .select()
     .from(hackathons)
     .where(
-      gt(hackathons.createdAt, new Date(Date.now() - 4 * 24 * 60 * 60 * 1000))
+      gt(hackathons.createdAt, new Date(Date.now() - 4 * 24 * 60 * 60 * 1000)),
     )
     .orderBy(desc(hackathons.createdAt))
     .execute();
@@ -855,7 +862,7 @@ const embedHackathons = asyncHandler(async (req, res) => {
           type: "hackathon-embeddings",
           embeddedAt: new Date().toISOString(),
         },
-      })
+      }),
   );
 
   const splitter = new RecursiveCharacterTextSplitter({
@@ -870,7 +877,7 @@ const embedHackathons = asyncHandler(async (req, res) => {
   });
 
   const fiveDaysAgo = new Date(
-    Date.now() - 5 * 24 * 60 * 60 * 1000
+    Date.now() - 5 * 24 * 60 * 60 * 1000,
   ).toISOString();
   try {
     await vecStore.delete({
@@ -954,8 +961,8 @@ const markWinners = asyncHandler(async (req, res) => {
         .where(
           and(
             eq(teamHackathons.hackathonId, hackathonId),
-            eq(teamHackathons.teamId, winners[pos.key])
-          )
+            eq(teamHackathons.teamId, winners[pos.key]),
+          ),
         )
         .execute();
     }
@@ -975,10 +982,10 @@ const markWinners = asyncHandler(async (req, res) => {
               winners.winner,
               winners.firstRunnerUp,
               winners.secondRunnerUp,
-            ].filter(Boolean)
-          )
-        )
-      )
+            ].filter(Boolean),
+          ),
+        ),
+      ),
     )
     .execute();
 
@@ -1069,48 +1076,50 @@ const markWinners = asyncHandler(async (req, res) => {
     .where(
       eq(
         organizers.userId,
-        hackathon[0] && hackathon[0].createdBy ? hackathon[0].createdBy : ""
-      )
+        hackathon[0] && hackathon[0].createdBy ? hackathon[0].createdBy : "",
+      ),
     )
     .limit(1)
     .execute();
 
-  for (const captain of captains) {
-    const position = teamIdToPosition[captain.teamId] || "participant";
-    // await sendHackathonResultEmail({
-    //   email: captain.email,
-    //   captainName: captain.name,
-    //   teamName: captain.teamName,
-    //   hackathonName: hackathon[0]?.title ?? "",
-    //   organizationName: organizer[0]?.name ?? "",
-    //   organizationEmail: organizer[0]?.email ?? "",
-    //   position: position as
-    //     | "participant"
-    //     | "winner"
-    //     | "firstRunnerUp"
-    //     | "secondRunnerUp",
-    // });
+  await Promise.all(
+    captains.map((captain) => {
+      const position = teamIdToPosition[captain.teamId] || "participant";
+      // await sendHackathonResultEmail({
+      //   email: captain.email,
+      //   captainName: captain.name,
+      //   teamName: captain.teamName,
+      //   hackathonName: hackathon[0]?.title ?? "",
+      //   organizationName: organizer[0]?.name ?? "",
+      //   organizationEmail: organizer[0]?.email ?? "",
+      //   position: position as
+      //     | "participant"
+      //     | "winner"
+      //     | "firstRunnerUp"
+      //     | "secondRunnerUp",
+      // });
 
-    //add to queue
-    hackathonTeamEmailQueue.add("winner-result", {
-      email: captain.email,
-      captainName: captain.name,
-      teamName: captain.teamName,
-      hackathonName: hackathon[0]?.title ?? "",
-      organizationName: organizer[0]?.name || "",
-      organizationEmail: organizer[0]?.email || "",
-      position: position as
-        | "participant"
-        | "winner"
-        | "firstRunnerUp"
-        | "secondRunnerUp",
-    });
-  }
+      //add to queue
+      return hackathonTeamEmailQueue.add("winner-result", {
+        email: captain.email,
+        captainName: captain.name,
+        teamName: captain.teamName,
+        hackathonName: hackathon[0]?.title ?? "",
+        organizationName: organizer[0]?.name || "",
+        organizationEmail: organizer[0]?.email || "",
+        position: position as
+          | "participant"
+          | "winner"
+          | "firstRunnerUp"
+          | "secondRunnerUp",
+      });
+    }),
+  );
 
   return res
     .status(200)
     .json(
-      new ApiResponse(200, updatedHackathon, "Winners marked successfully")
+      new ApiResponse(200, updatedHackathon, "Winners marked successfully"),
     );
 });
 
@@ -1123,8 +1132,8 @@ const getUpcomingHackathons = asyncHandler(async (req, res) => {
     .where(
       or(
         gt(hackathons.registrationStart, new Date()),
-        lt(hackathons.registrationEnd, new Date())
-      )
+        lt(hackathons.registrationEnd, new Date()),
+      ),
     )
     .orderBy(hackathons.startTime)
     .execute();
@@ -1154,7 +1163,7 @@ const getUpcomingHackathons = asyncHandler(async (req, res) => {
         ...hackathon,
         organizationName: org?.organizationName || "Unknown",
       };
-    }
+    },
   );
 
   return res
@@ -1163,8 +1172,8 @@ const getUpcomingHackathons = asyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         upcomingHackathonsWithOrganizers,
-        "Upcoming hackathons fetched"
-      )
+        "Upcoming hackathons fetched",
+      ),
     );
 });
 

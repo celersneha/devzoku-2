@@ -8,6 +8,7 @@ import developerRoutes from "./routes/developer.route";
 import teamRoutes from "./routes/team.route";
 import hackathonRoutes from "./routes/hackathon.route";
 import organizerRoutes from "./routes/organizer.route";
+import internalRoutes from "./routes/internal.route";
 import errorMiddleware from "./middlewares/error.middleware";
 
 const app = express();
@@ -18,7 +19,7 @@ app.use(
   cors({
     origin: allowedOrigins,
     credentials: true,
-  })
+  }),
 );
 app.use(cookieParser());
 app.use(express.json({ limit: "16kb" }));
@@ -36,6 +37,7 @@ app.use("/developer", developerRoutes);
 app.use("/organizer", organizerRoutes);
 app.use("/hackathon", hackathonRoutes);
 app.use("/team", teamRoutes);
+app.use("/internal", internalRoutes);
 
 app.get("/", (req, res) => {
   res.status(200).json({ message: "Welcome to DevZoku API" });
