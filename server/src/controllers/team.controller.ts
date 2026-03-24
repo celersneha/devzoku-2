@@ -12,6 +12,13 @@ import { teamHackathons } from "../db/schema/hackathon.schema.js";
 
 import { emitToUser } from "../lib/socket.js";
 
+type TeamMemberSummary = {
+  userId: string;
+  teamId: string;
+  name: string;
+  email: string;
+};
+
 // Controller to create a team
 const createTeam = asyncHandler(async (req, res) => {
   try {
@@ -74,13 +81,17 @@ const createTeam = asyncHandler(async (req, res) => {
     return res
       .status(201)
       .json(new ApiResponse(201, newTeam[0], "Team created successfully"));
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error creating team:", error);
 
-    throw new ApiError(
-      error.statusCode || 500,
-      error.message || "Something went wrong while creating the team",
-    );
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Something went wrong while creating the team";
+    const statusCode =
+      error instanceof ApiError && error.statusCode ? error.statusCode : 500;
+
+    throw new ApiError(statusCode, message);
   }
 });
 
@@ -157,7 +168,7 @@ const getJoinedTeams = asyncHandler(async (req, res) => {
     .where(inArray(teamMembers.teamId, teamIds))
     .execute();
 
-  const membersByTeam: Record<string, any[]> = {};
+  const membersByTeam: Record<string, TeamMemberSummary[]> = {};
   allMembers.forEach((member) => {
     if (!membersByTeam[member.teamId]) {
       membersByTeam[member.teamId] = [];

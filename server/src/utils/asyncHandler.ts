@@ -3,8 +3,8 @@ import type { Request, Response, NextFunction, RequestHandler } from "express";
 type AsyncRequestHandler = (
   req: Request,
   res: Response,
-  next: NextFunction
-) => Promise<any>;
+  next: NextFunction,
+) => Promise<void | Response>;
 
 const asyncHandler = (requestHandler: AsyncRequestHandler): RequestHandler => {
   return (req: Request, res: Response, next: NextFunction) => {

@@ -24,6 +24,19 @@ import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import { initialiseVectorStore } from "../lib/vectorStore.js";
 import { developers } from "../db/schema/developer.schema.js";
 
+type PhaseInput = {
+  name: string;
+  description: string;
+  startTime: string;
+  endTime: string;
+  order: number;
+};
+
+type ParticipatedHackathonEntry = {
+  hackathonId: string;
+  position: "winner" | "firstRunnerUp" | "secondRunnerUp" | "participant";
+};
+
 // controller for applying to a hackathon with a team
 const applyToHackathon = asyncHandler(async (req, res) => {
   const { user } = req;
@@ -751,7 +764,7 @@ const createHackathon = asyncHandler(async (req, res) => {
       const hackStart = new Date(req.body.startTime);
       const hackEnd = new Date(req.body.endTime);
 
-      const phasesToInsert = phases.map((phase: any) => ({
+      const phasesToInsert = (phases as PhaseInput[]).map((phase) => ({
         hackathonId: newHackathon.id,
         name: phase.name,
         description: phase.description,
@@ -1020,8 +1033,15 @@ const markWinners = asyncHandler(async (req, res) => {
       .limit(1)
       .execute();
 
-    const prevHackathons = Array.isArray(existingDev?.participatedHackathonIds)
-      ? existingDev.participatedHackathonIds
+    const prevHackathons: ParticipatedHackathonEntry[] = Array.isArray(
+      existingDev?.participatedHackathonIds,
+    )
+      ? existingDev.participatedHackathonIds.filter(
+          (item): item is ParticipatedHackathonEntry =>
+            !!item &&
+            typeof item === "object" &&
+            typeof (item as { hackathonId?: string }).hackathonId === "string",
+        )
       : [];
 
     const newHackathonObj = {
@@ -1034,7 +1054,7 @@ const markWinners = asyncHandler(async (req, res) => {
     };
 
     const updatedHackathons = [
-      ...prevHackathons.filter((h: any) => h.hackathonId !== hackathonId),
+      ...prevHackathons.filter((h) => h.hackathonId !== hackathonId),
       newHackathonObj,
     ];
 
@@ -1161,7 +1181,7 @@ const getUpcomingHackathons = asyncHandler(async (req, res) => {
       const org = organizer.find((org) => org.userId === hackathon.createdBy);
       return {
         ...hackathon,
-        organizationName: org?.organizationName || "Unknown",
+        organizationName: org?.organizationName || "Not Available",
       };
     },
   );

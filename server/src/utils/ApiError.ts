@@ -1,6 +1,6 @@
 class ApiError extends Error {
   public statusCode: number;
-  public data: any;
+  public data: Record<string, string | number | boolean | null> | null;
   public success: boolean;
   public errors: string[];
 
@@ -8,7 +8,7 @@ class ApiError extends Error {
     statusCode: number,
     message: string = "Something Went Wrong",
     errors: string[] = [],
-    stack: string = ""
+    stack: string = "",
   ) {
     super(message);
     this.statusCode = statusCode;

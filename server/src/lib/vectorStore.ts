@@ -11,9 +11,7 @@ const initialiseVectorStore = async ({
     throw new Error("QDRANT_URL is not set");
   }
 
-  let vectorStore: any = null;
-
-  vectorStore = await QdrantVectorStore.fromExistingCollection(
+  const vectorStore = await QdrantVectorStore.fromExistingCollection(
     getEmbeddings(),
     {
       url: qdrantUrl,

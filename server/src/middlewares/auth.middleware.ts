@@ -70,8 +70,10 @@ const verifyJWT = asyncHandler(async (req, res, next) => {
     }
 
     next();
-  } catch (error: any) {
-    throw new ApiError(401, error?.message || "Invalid access token");
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Invalid access token";
+    throw new ApiError(401, message);
   }
 });
 

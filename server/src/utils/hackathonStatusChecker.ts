@@ -9,7 +9,7 @@ type HackathonStatus =
   | "upcoming"
   | "completed"
   | "ongoing"
-  | "unknown"
+  | "not-classified"
   | "Registration in Progress"
   | "Registration ended";
 
@@ -17,7 +17,7 @@ export default function hackathonStatusChecker(
   regStart: HackathonDates["regStart"],
   regEnd: HackathonDates["regEnd"],
   hackStart: HackathonDates["hackStart"],
-  hackEnd: HackathonDates["hackEnd"]
+  hackEnd: HackathonDates["hackEnd"],
 ): HackathonStatus {
   const currentTime = new Date();
 
@@ -41,5 +41,5 @@ export default function hackathonStatusChecker(
     return "completed";
   }
 
-  return "unknown";
+  return "not-classified";
 }

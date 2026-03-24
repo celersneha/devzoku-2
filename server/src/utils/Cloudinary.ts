@@ -11,7 +11,11 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
   cloudinary,
   params: (req, file) => {
-    const username = req.user?.firstName.split(" ")[0] || "anon";
+    const firstName = req.user?.firstName;
+    const username =
+      typeof firstName === "string" && firstName.trim().length > 0
+        ? firstName.split(" ")[0]
+        : "anon";
     const ext = file.mimetype.split("/")[1];
 
     const public_id = [

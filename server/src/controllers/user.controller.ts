@@ -17,7 +17,7 @@ declare module "express" {
     user?: {
       id: string;
       role: string;
-      [key: string]: any;
+      [key: string]: string | number | boolean | null | undefined | object;
     };
   }
 }
@@ -73,7 +73,7 @@ const googleAuth = asyncHandler(async (req, res) => {
   const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${
     process.env.GOOGLE_CLIENT_ID
   }&redirect_uri=${encodeURIComponent(
-    REDIRECT_URI
+    REDIRECT_URI,
   )}&response_type=code&scope=profile email&state=${role}&prompt=select_account&access_type=offline`;
 
   res.redirect(googleAuthUrl);
@@ -90,7 +90,7 @@ const signUpWithGoogle = asyncHandler(async (req, res) => {
   if (error) {
     console.error("Google OAuth error:", error);
     return res.redirect(
-      `${baseOrigin || "http://localhost:3000"}?error=access_denied`
+      `${baseOrigin || "http://localhost:3000"}?error=access_denied`,
     );
   }
 
@@ -119,12 +119,12 @@ const signUpWithGoogle = asyncHandler(async (req, res) => {
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
-    }
+    },
   );
 
   // Get user info from Google
   const userResponse = await axios.get<GoogleUser>(
-    `https://www.googleapis.com/oauth2/v2/userinfo?access_token=${tokenResponse.data.access_token}`
+    `https://www.googleapis.com/oauth2/v2/userinfo?access_token=${tokenResponse.data.access_token}`,
   );
 
   // Check if user already exists in our database
@@ -168,7 +168,7 @@ const signUpWithGoogle = asyncHandler(async (req, res) => {
   } else {
     if (existingUsers[0] && existingUsers[0].role !== role) {
       return res.redirect(
-        `${baseOrigin}/?toast=User already exists with a different role`
+        `${baseOrigin}/?toast=User already exists with a different role`,
       );
     }
     userObj = existingUsers[0];
@@ -272,8 +272,8 @@ const getCurrentUser = asyncHandler(async (req, res) => {
         profile,
         role,
       },
-      "Current user fetched successfully"
-    )
+      "Current user fetched successfully",
+    ),
   );
 });
 
@@ -314,7 +314,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     //  Verify token
     const decodedToken = jwt.verify(
       incomingRefreshToken,
-      process.env.REFRESH_TOKEN_SECRET!
+      process.env.REFRESH_TOKEN_SECRET!,
     ) as { id: string; role: "developer" | "organizer" };
 
     const { id, role } = decodedToken;
@@ -341,7 +341,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     // Generate new tokens
     const { accessToken, refreshToken: newRefreshToken } = await generateTokens(
       user,
-      role
+      role,
     );
 
     //save new refresh token in db
@@ -378,12 +378,14 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
         new ApiResponse(
           200,
           { accessToken, refreshToken: newRefreshToken, role },
-          "Access token refreshed"
-        )
+          "Access token refreshed",
+        ),
       );
-  } catch (error: any) {
-    console.error("Refresh token error:", error.message);
-    throw new ApiError(401, error?.message || "Invalid refresh token");
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Invalid refresh token";
+    console.error("Refresh token error:", message);
+    throw new ApiError(401, message);
   }
 });
 

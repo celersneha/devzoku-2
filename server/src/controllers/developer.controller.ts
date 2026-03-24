@@ -14,6 +14,33 @@ import { initialiseVectorStore } from "../lib/vectorStore.js";
 import hackathonStatusChecker from "../utils/hackathonStatusChecker.js";
 import { teams } from "../db/schema/team.schema.js";
 
+type ParticipationEntry = {
+  hackathonId: string;
+  position: "winner" | "firstRunnerUp" | "secondRunnerUp" | "participant";
+};
+
+type RecommendedHackathonEntry = {
+  hackathonId: string;
+  createdAt: Date | string;
+};
+
+const isParticipationEntry = (
+  value: { hackathonId?: string; position?: string } | null | undefined,
+): value is ParticipationEntry => {
+  if (!value) {
+    return false;
+  }
+
+  const item = value;
+  return (
+    typeof item.hackathonId === "string" &&
+    typeof item.position === "string" &&
+    ["winner", "firstRunnerUp", "secondRunnerUp", "participant"].includes(
+      item.position,
+    )
+  );
+};
+
 // Controller to handle completing a developer's profile
 const completeDeveloperProfile = asyncHandler(async (req, res) => {
   try {
@@ -81,7 +108,7 @@ const completeDeveloperProfile = asyncHandler(async (req, res) => {
           "Profile updated successfully ",
         ),
       );
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error updating developer profile:", error);
 
     throw new ApiError(500, "Something went wrong while updating the profile");
@@ -126,28 +153,28 @@ const fetchDeveloperProfile = asyncHandler(async (req, res) => {
   }
 
   // fetch the participated hackathons
-  const participatedHackathonIds = Array.isArray(
+  const participatedHackathonIds: ParticipationEntry[] = Array.isArray(
     developerProfile[0]?.participatedHackathonIds,
   )
-    ? developerProfile[0].participatedHackathonIds
+    ? developerProfile[0].participatedHackathonIds.filter(isParticipationEntry)
     : [];
 
   const participatedHackathonsCount = participatedHackathonIds.length;
 
   const winnerCount = participatedHackathonIds.filter(
-    (item: any) => item.position === "winner",
+    (item) => item.position === "winner",
   ).length;
   const firstRunnerUpCount = participatedHackathonIds.filter(
-    (item: any) => item.position === "firstRunnerUp",
+    (item) => item.position === "firstRunnerUp",
   ).length;
   const secondRunnerUpCount = participatedHackathonIds.filter(
-    (item: any) => item.position === "secondRunnerUp",
+    (item) => item.position === "secondRunnerUp",
   ).length;
 
   const hackathonsWithPositionCount =
     winnerCount + firstRunnerUpCount + secondRunnerUpCount;
 
-  let hackathonDomainTags: any = [];
+  let hackathonDomainTags: string[] = [];
   if (participatedHackathonIds.length > 0) {
     const tagsResult = await db
       .select({ tags: hackathons.tags })
@@ -155,15 +182,15 @@ const fetchDeveloperProfile = asyncHandler(async (req, res) => {
       .where(
         inArray(
           hackathons.id,
-          participatedHackathonIds.map((h: any) => h.hackathonId),
+          participatedHackathonIds.map((h) => h.hackathonId),
         ),
       )
       .execute();
 
     const allTags = tagsResult
-      .map((row: any) => row.tags)
+      .map((row) => row.tags)
       .flat()
-      .filter(Boolean);
+      .filter((tag): tag is string => typeof tag === "string");
 
     const distinctTags = Array.from(new Set(allTags));
     hackathonDomainTags = distinctTags;
@@ -458,10 +485,15 @@ const getRecommendedHackathons = asyncHandler(async (req, res) => {
     .where(eq(developers.userId, userId))
     .execute();
 
-  const recommendedHackObjects = Array.isArray(
+  const recommendedHackObjects: RecommendedHackathonEntry[] = Array.isArray(
     recommendedHackathons?.recommendedHackIds,
   )
-    ? recommendedHackathons.recommendedHackIds
+    ? recommendedHackathons.recommendedHackIds.filter(
+        (entry): entry is RecommendedHackathonEntry =>
+          !!entry &&
+          typeof entry === "object" &&
+          typeof (entry as { hackathonId?: string }).hackathonId === "string",
+      )
     : [];
 
   const developerSkills = Array.isArray(recommendedHackathons?.skills)
@@ -479,7 +511,7 @@ const getRecommendedHackathons = asyncHandler(async (req, res) => {
 
   const recentHackIds = recentHackObjects.map((obj) => obj.hackathonId);
 
-  let recommendedHackathonsData: any[] = [];
+  let recommendedHackathonsData: Array<typeof hackathons.$inferSelect> = [];
 
   if (recentHackIds.length > 0) {
     await db
@@ -543,7 +575,9 @@ const getRecommendedHackathons = asyncHandler(async (req, res) => {
 
   // fetch latest N interactions
   const latestNInteractions = [...fetchedUserInteractions]
-    .sort((a: any, b: any) => b.createdAt - a.createdAt)
+    .sort(
+      (a, b) => (b.createdAt?.getTime() ?? 0) - (a.createdAt?.getTime() ?? 0),
+    )
     .slice(0, 10);
 
   const latestIds = latestNInteractions.map((i) => i.id);
@@ -600,7 +634,9 @@ Rules:
 - Output: comma-separated UUIDs only (id1,id2,id3), no brackets, quotes, or extra text.
 
 Context:
-${vectorResults.map((doc: any) => doc.pageContent).join("\n")}
+${vectorResults
+  .map((doc: { pageContent: string }) => doc.pageContent)
+  .join("\n")}
 `);
 
   const hackathonIds = response.text

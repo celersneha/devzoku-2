@@ -77,7 +77,7 @@ const completeOrganizerProfile = asyncHandler(async (req, res) => {
           "Organizer profile updated successfully ✅",
         ),
       );
-  } catch (error: any) {
+  } catch (error) {
     throw new ApiError(500, "Something went wrong while updating the profile");
   }
 });
