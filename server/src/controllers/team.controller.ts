@@ -7,11 +7,11 @@ import { ApiError } from "../utils/ApiError";
 import { asyncHandler } from "../utils/asyncHandler";
 import { teamMembers, teams } from "../db/schema/team.schema";
 import { users } from "../db/schema/user.schema";
-import { io } from "..";
 import { hackathons, teamHackathons } from "../db/schema/hackathon.schema";
 import { getHackathonTeamEmailQueue } from "../queues/queue";
 import formatDate from "../utils/formatDate";
 import { organizers } from "../db/schema/organizer.schema";
+import { emitToUser } from "../lib/socket";
 
 // Controller to create a team
 const createTeam = asyncHandler(async (req, res) => {
@@ -366,7 +366,7 @@ const sendInvitation = asyncHandler(async (req, res) => {
   };
 
   teamMembersList.forEach((member) => {
-    io.to(member.userId).emit("new-invitation", notification);
+    emitToUser(member.userId, "new-invitation", notification);
   });
 
   // store notification in the database (fetch + push + update)
@@ -477,7 +477,7 @@ const fetchPendingInvitesAndAcceptThem = asyncHandler(async (req, res) => {
   };
 
   // 1. Real-time notification
-  io.to(pendingUserId as string).emit("invitation-accepted", notification);
+  emitToUser(pendingUserId as string, "invitation-accepted", notification);
 
   // 2. Persist notification in DB
   const [dev] = await db

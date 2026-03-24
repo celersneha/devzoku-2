@@ -1,6 +1,21 @@
 import { MistralAIEmbeddings } from "@langchain/mistralai";
 
-export const embeddings = new MistralAIEmbeddings({
-  apiKey: process.env.MISTRAL_API_KEY!,
-  model: "mistral-embed",
-});
+let embeddings: MistralAIEmbeddings | null = null;
+
+export const getEmbeddings = () => {
+  if (embeddings) {
+    return embeddings;
+  }
+
+  const apiKey = process.env.MISTRAL_API_KEY;
+  if (!apiKey) {
+    throw new Error("MISTRAL_API_KEY is not set");
+  }
+
+  embeddings = new MistralAIEmbeddings({
+    apiKey,
+    model: "mistral-embed",
+  });
+
+  return embeddings;
+};

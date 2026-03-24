@@ -27,6 +27,20 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 
 app.use(express.static("public"));
 
+const getHealthResponse = () => ({
+  ok: true,
+  service: "devzoku-server",
+  timestamp: new Date().toISOString(),
+});
+
+app.get("/health", (req, res) => {
+  res.status(200).json(getHealthResponse());
+});
+
+app.get("/", (req, res) => {
+  res.status(200).json(getHealthResponse());
+});
+
 // authorization routes
 app.use("/developer/authorization", userRoutes);
 app.use("/organizer/authorization", userRoutes);
@@ -38,10 +52,6 @@ app.use("/organizer", organizerRoutes);
 app.use("/hackathon", hackathonRoutes);
 app.use("/team", teamRoutes);
 app.use("/internal", internalRoutes);
-
-app.get("/", (req, res) => {
-  res.status(200).json({ message: "Welcome to DevZoku API" });
-});
 
 app.use(errorMiddleware);
 

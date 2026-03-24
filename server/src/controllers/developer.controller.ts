@@ -9,7 +9,7 @@ import { asyncHandler } from "../utils/asyncHandler";
 import { users } from "../db/schema/user.schema";
 import { hackathons } from "../db/schema/hackathon.schema";
 import { userInteractions } from "../db/schema/userInteraction.schema";
-import { llm } from "../lib/llm";
+import { getLlm } from "../lib/llm";
 import { initialiseVectorStore } from "../lib/vectorStore";
 import hackathonStatusChecker from "../utils/hackathonStatusChecker";
 import { teams } from "../db/schema/team.schema";
@@ -27,7 +27,7 @@ const completeDeveloperProfile = asyncHandler(async (req, res) => {
     if (user?.role !== "developer") {
       throw new ApiError(
         403,
-        "Access denied. Only developers can complete profiles."
+        "Access denied. Only developers can complete profiles.",
       );
     }
 
@@ -76,7 +76,11 @@ const completeDeveloperProfile = asyncHandler(async (req, res) => {
     return res
       .status(200)
       .json(
-        new ApiResponse(200, updatedProfile[0], "Profile updated successfully ")
+        new ApiResponse(
+          200,
+          updatedProfile[0],
+          "Profile updated successfully ",
+        ),
       );
   } catch (error: any) {
     console.error("Error updating developer profile:", error);
@@ -124,7 +128,7 @@ const fetchDeveloperProfile = asyncHandler(async (req, res) => {
 
   // fetch the participated hackathons
   const participatedHackathonIds = Array.isArray(
-    developerProfile[0]?.participatedHackathonIds
+    developerProfile[0]?.participatedHackathonIds,
   )
     ? developerProfile[0].participatedHackathonIds
     : [];
@@ -132,13 +136,13 @@ const fetchDeveloperProfile = asyncHandler(async (req, res) => {
   const participatedHackathonsCount = participatedHackathonIds.length;
 
   const winnerCount = participatedHackathonIds.filter(
-    (item: any) => item.position === "winner"
+    (item: any) => item.position === "winner",
   ).length;
   const firstRunnerUpCount = participatedHackathonIds.filter(
-    (item: any) => item.position === "firstRunnerUp"
+    (item: any) => item.position === "firstRunnerUp",
   ).length;
   const secondRunnerUpCount = participatedHackathonIds.filter(
-    (item: any) => item.position === "secondRunnerUp"
+    (item: any) => item.position === "secondRunnerUp",
   ).length;
 
   const hackathonsWithPositionCount =
@@ -152,8 +156,8 @@ const fetchDeveloperProfile = asyncHandler(async (req, res) => {
       .where(
         inArray(
           hackathons.id,
-          participatedHackathonIds.map((h: any) => h.hackathonId)
-        )
+          participatedHackathonIds.map((h: any) => h.hackathonId),
+        ),
       )
       .execute();
 
@@ -179,8 +183,8 @@ const fetchDeveloperProfile = asyncHandler(async (req, res) => {
         secondRunnerUpCount,
         user: user[0],
       },
-      "Profile fetched successfully"
-    )
+      "Profile fetched successfully",
+    ),
   );
 });
 
@@ -211,7 +215,7 @@ const notificationHandling = asyncHandler(async (req, res) => {
     .slice()
     .sort(
       (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     );
 
   if (notifications.length === 0) {
@@ -228,7 +232,7 @@ const notificationHandling = asyncHandler(async (req, res) => {
 
   // find the notification by id and delete it
   const updatedNotifications = dev.notifications?.filter(
-    (notification) => notification.id !== id
+    (notification) => notification.id !== id,
   );
 
   if (id && deleteOnlyNotification === "false") {
@@ -238,7 +242,7 @@ const notificationHandling = asyncHandler(async (req, res) => {
         ?.type === "invitation-sent"
     ) {
       const notificationToDelete = dev.notifications?.find(
-        (notification) => notification.id === id
+        (notification) => notification.id === id,
       );
 
       if (!notificationToDelete) {
@@ -269,7 +273,7 @@ const notificationHandling = asyncHandler(async (req, res) => {
 
       const updatedPendingInvites = team.pendingInvitesFromUsers.filter(
         (inviteUserId: string) =>
-          inviteUserId !== notificationToDelete.developerId
+          inviteUserId !== notificationToDelete.developerId,
       );
 
       await db
@@ -344,8 +348,8 @@ const fetchProjects = asyncHandler(async (req, res) => {
       new ApiResponse(
         201,
         developer.projects || [],
-        "Projects fetched successfully"
-      )
+        "Projects fetched successfully",
+      ),
     );
 });
 
@@ -424,7 +428,7 @@ const deleteProject = asyncHandler(async (req, res) => {
   }
   // Filter out the project to be deleted
   const updatedProjects = (developer.projects || []).filter(
-    (project) => project.id !== projectId
+    (project) => project.id !== projectId,
   );
   // Update developer's projects
   await db
@@ -456,7 +460,7 @@ const getRecommendedHackathons = asyncHandler(async (req, res) => {
     .execute();
 
   const recommendedHackObjects = Array.isArray(
-    recommendedHackathons?.recommendedHackIds
+    recommendedHackathons?.recommendedHackIds,
   )
     ? recommendedHackathons.recommendedHackIds
     : [];
@@ -503,7 +507,7 @@ const getRecommendedHackathons = asyncHandler(async (req, res) => {
         new Date(hack.registrationStart ?? ""),
         new Date(hack.registrationEnd ?? ""),
         new Date(hack.startTime ?? ""),
-        new Date(hack.endTime ?? "")
+        new Date(hack.endTime ?? ""),
       );
       return {
         ...hack,
@@ -512,7 +516,7 @@ const getRecommendedHackathons = asyncHandler(async (req, res) => {
     });
 
     const filteredHackathons = hackathonsWithStatus.filter((hack) =>
-      ["upcoming", "Registration in Progress"].includes(hack.status)
+      ["upcoming", "Registration in Progress"].includes(hack.status),
     );
 
     return res
@@ -521,8 +525,8 @@ const getRecommendedHackathons = asyncHandler(async (req, res) => {
         new ApiResponse(
           200,
           filteredHackathons,
-          "Recommended hackathons fetched successfully"
-        )
+          "Recommended hackathons fetched successfully",
+        ),
       );
   }
 
@@ -551,8 +555,8 @@ const getRecommendedHackathons = asyncHandler(async (req, res) => {
     .where(
       and(
         eq(userInteractions.userId, userId),
-        notInArray(userInteractions.id, latestIds)
-      )
+        notInArray(userInteractions.id, latestIds),
+      ),
     )
     .execute();
 
@@ -586,7 +590,8 @@ IMPORTANT:
       .json(new ApiResponse(200, [], "No relevant hackathons found"));
   }
 
-  const response = await llm.invoke(`You are a hackathon recommendation system.
+  const response = await getLlm()
+    .invoke(`You are a hackathon recommendation system.
 Given the context, return only the relevant hackathon IDs.
 
 Rules:
@@ -604,8 +609,8 @@ ${vectorResults.map((doc: any) => doc.pageContent).join("\n")}
     .map((id: string) => id.trim())
     .filter((id: string) =>
       /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(
-        id
-      )
+        id,
+      ),
     );
 
   if (!hackathonIds || hackathonIds.length === 0) {
@@ -651,7 +656,7 @@ ${vectorResults.map((doc: any) => doc.pageContent).join("\n")}
       new Date(hack.registrationStart ?? ""),
       new Date(hack.registrationEnd ?? ""),
       new Date(hack.startTime ?? ""),
-      new Date(hack.endTime ?? "")
+      new Date(hack.endTime ?? ""),
     );
     return {
       ...hack,
@@ -665,8 +670,8 @@ ${vectorResults.map((doc: any) => doc.pageContent).join("\n")}
       new ApiResponse(
         200,
         hackathonsWithStatus,
-        "Recommended hackathons fetched successfully"
-      )
+        "Recommended hackathons fetched successfully",
+      ),
     );
 });
 
