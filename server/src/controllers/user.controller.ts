@@ -2,14 +2,14 @@ import { eq } from "drizzle-orm";
 import axios from "axios";
 import jwt from "jsonwebtoken";
 
-import { db } from "../db/index";
-import { developers } from "../db/schema/developer.schema";
-import { organizers } from "../db/schema/organizer.schema";
-import { ApiError } from "../utils/ApiError";
-import { ApiResponse } from "../utils/ApiResponse";
-import { asyncHandler } from "../utils/asyncHandler";
-import { generateTokens } from "../utils/TokenGeneration";
-import { users } from "../db/schema/user.schema";
+import { db } from "../db/index.js";
+import { developers } from "../db/schema/developer.schema.js";
+import { organizers } from "../db/schema/organizer.schema.js";
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { generateTokens } from "../utils/TokenGeneration.js";
+import { users } from "../db/schema/user.schema.js";
 
 // Extend Express Request interface
 declare module "express" {

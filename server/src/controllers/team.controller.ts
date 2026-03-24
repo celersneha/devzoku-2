@@ -1,17 +1,16 @@
 import { eq, desc, and, inArray, sql, name, not } from "drizzle-orm";
-import { db } from "../db";
-import { developers } from "../db/schema/developer.schema";
-import { ApiResponse } from "../utils/ApiResponse";
+import { db } from "../db/index.js";
+
+import { developers } from "../db/schema/developer.schema.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
 import type { Request, Response } from "express";
-import { ApiError } from "../utils/ApiError";
-import { asyncHandler } from "../utils/asyncHandler";
-import { teamMembers, teams } from "../db/schema/team.schema";
-import { users } from "../db/schema/user.schema";
-import { hackathons, teamHackathons } from "../db/schema/hackathon.schema";
-import { getHackathonTeamEmailQueue } from "../queues/queue";
-import formatDate from "../utils/formatDate";
-import { organizers } from "../db/schema/organizer.schema";
-import { emitToUser } from "../lib/socket";
+import { ApiError } from "../utils/ApiError.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { teamMembers, teams } from "../db/schema/team.schema.js";
+import { users } from "../db/schema/user.schema.js";
+import { teamHackathons } from "../db/schema/hackathon.schema.js";
+
+import { emitToUser } from "../lib/socket.js";
 
 // Controller to create a team
 const createTeam = asyncHandler(async (req, res) => {

@@ -11,8 +11,8 @@ import {
   jsonb,
 } from "drizzle-orm/pg-core";
 
-import { teams } from "./team.schema";
-import { users } from "./user.schema";
+import { teams } from "./team.schema.js";
+import { users } from "./user.schema.js";
 
 export const modeSchemaEnum = ["online", "offline"] as const;
 
@@ -42,7 +42,7 @@ export const hackathons = pgTable(
     index("idx_hackathons_created_by").on(t.createdBy),
     index("idx_hackathons_start_time").on(t.startTime),
     index("idx_hackathons_end_time").on(t.endTime),
-  ]
+  ],
 );
 
 //TEAM_HACKATHONS table with indexes
@@ -69,7 +69,7 @@ export const teamHackathons = pgTable(
     primaryKey({ columns: [t.teamId, t.hackathonId] }),
     index("idx_team_hackathons_team_id").on(t.teamId),
     index("idx_team_hackathons_hackathon_id").on(t.hackathonId),
-  ]
+  ],
 );
 
 export const hackathonPhases = pgTable(
@@ -90,5 +90,5 @@ export const hackathonPhases = pgTable(
     index("idx_hackathon_phases_order").on(t.order),
     index("idx_hackathon_phases_start_time").on(t.startTime),
     index("idx_hackathon_phases_end_time").on(t.endTime),
-  ]
+  ],
 );

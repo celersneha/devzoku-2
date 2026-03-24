@@ -1,19 +1,18 @@
 import { and, eq, inArray, notInArray } from "drizzle-orm";
-import { db } from "../db";
-import { developers } from "../db/schema/developer.schema";
-import { ApiResponse } from "../utils/ApiResponse";
-import { completeDeveloperProfileSchema } from "../zod-schema/developer.schema";
-import type { Request, Response } from "express";
-import { ApiError } from "../utils/ApiError";
-import { asyncHandler } from "../utils/asyncHandler";
-import { users } from "../db/schema/user.schema";
-import { hackathons } from "../db/schema/hackathon.schema";
-import { userInteractions } from "../db/schema/userInteraction.schema";
-import { getLlm } from "../lib/llm";
-import { initialiseVectorStore } from "../lib/vectorStore";
-import hackathonStatusChecker from "../utils/hackathonStatusChecker";
-import { teams } from "../db/schema/team.schema";
-import { fi } from "zod/v4/locales";
+import { db } from "../db/index.js";
+import { developers } from "../db/schema/developer.schema.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+import { completeDeveloperProfileSchema } from "../zod-schema/developer.schema.js";
+
+import { ApiError } from "../utils/ApiError.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { users } from "../db/schema/user.schema.js";
+import { hackathons } from "../db/schema/hackathon.schema.js";
+import { userInteractions } from "../db/schema/userInteraction.schema.js";
+import { getLlm } from "../lib/llm.js";
+import { initialiseVectorStore } from "../lib/vectorStore.js";
+import hackathonStatusChecker from "../utils/hackathonStatusChecker.js";
+import { teams } from "../db/schema/team.schema.js";
 
 // Controller to handle completing a developer's profile
 const completeDeveloperProfile = asyncHandler(async (req, res) => {

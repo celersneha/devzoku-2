@@ -1,10 +1,10 @@
-import { getHackathonTeamEmailQueue, closeQueue } from "../queues/queue";
-import { teamRegToHackathonTemplate } from "../templates/teamRegToHackathon";
-import { hackathonResultAnnouncementTemplate } from "../templates/HackathonWinnerAnnouncement";
-import { ApiError } from "../utils/ApiError";
-import { ApiResponse } from "../utils/ApiResponse";
-import { asyncHandler } from "../utils/asyncHandler";
-import transporter from "../utils/nodemailerUtility";
+import { getHackathonTeamEmailQueue, closeQueue } from "../queues/queue.js";
+import { teamRegToHackathonTemplate } from "../templates/teamRegToHackathon.js";
+import { hackathonResultAnnouncementTemplate } from "../templates/HackathonWinnerAnnouncement.js";
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import transporter from "../utils/nodemailerUtility.js";
 
 type TeamRegistrationJobData = {
   email: string;

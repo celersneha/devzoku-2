@@ -7,8 +7,8 @@ import {
   boolean,
   json,
 } from "drizzle-orm/pg-core";
-import { hackathons, modeSchemaEnum } from "./hackathon.schema";
-import { users } from "./user.schema";
+import { hackathons, modeSchemaEnum } from "./hackathon.schema.js";
+import { users } from "./user.schema.js";
 
 const interactionTypeEnum = ["view", "search", "register"] as const;
 

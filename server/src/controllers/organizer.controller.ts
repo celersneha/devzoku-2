@@ -1,13 +1,12 @@
-import { desc, eq, is } from "drizzle-orm";
-import { db } from "../db";
-import { organizers } from "../db/schema/organizer.schema";
-import { users } from "../db/schema/user.schema";
-import { ApiResponse } from "../utils/ApiResponse";
-import { completeOrganizerProfileSchema } from "../zod-schema/organizer.schema";
-import type { Request, Response } from "express";
-import { ApiError } from "../utils/ApiError";
-import { asyncHandler } from "../utils/asyncHandler";
-import { hackathons } from "../db/schema/hackathon.schema";
+import { desc, eq } from "drizzle-orm";
+import { db } from "../db/index.js";
+import { organizers } from "../db/schema/organizer.schema.js";
+import { users } from "../db/schema/user.schema.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+import { completeOrganizerProfileSchema } from "../zod-schema/organizer.schema.js";
+import { ApiError } from "../utils/ApiError.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { hackathons } from "../db/schema/hackathon.schema.js";
 
 // Controller for completing organizer profile
 const completeOrganizerProfile = asyncHandler(async (req, res) => {
@@ -22,7 +21,7 @@ const completeOrganizerProfile = asyncHandler(async (req, res) => {
     if (user?.role !== "organizer") {
       throw new ApiError(
         403,
-        "Access denied. Only organizers can complete profiles."
+        "Access denied. Only organizers can complete profiles.",
       );
     }
 
@@ -75,8 +74,8 @@ const completeOrganizerProfile = asyncHandler(async (req, res) => {
         new ApiResponse(
           200,
           updatedProfile[0],
-          "Organizer profile updated successfully ✅"
-        )
+          "Organizer profile updated successfully ✅",
+        ),
       );
   } catch (error: any) {
     throw new ApiError(500, "Something went wrong while updating the profile");
@@ -124,8 +123,8 @@ const fetchOrganizerProfile = asyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         { organizerProfile, location },
-        "Organizer profile fetched successfully"
-      )
+        "Organizer profile fetched successfully",
+      ),
     );
 });
 
@@ -168,8 +167,8 @@ const fetchHackathonsOrganized = asyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         organizedHackathons,
-        "Hackathons organized fetched successfully"
-      )
+        "Hackathons organized fetched successfully",
+      ),
     );
 });
 

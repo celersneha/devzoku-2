@@ -3,10 +3,10 @@ import {
   completeOrganizerProfile,
   fetchHackathonsOrganized,
   fetchOrganizerProfile,
-} from "../controllers/organizer.controller";
-import { verifyJWT } from "../middlewares/auth.middleware";
+} from "../controllers/organizer.controller.js";
+import { verifyJWT } from "../middlewares/auth.middleware.js";
 
-import { upload } from "../utils/Cloudinary";
+import { upload } from "../utils/Cloudinary.js";
 const router = Router();
 
 // Protected route

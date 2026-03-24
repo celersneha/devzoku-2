@@ -3,13 +3,13 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
-import userRoutes from "./routes/user.route";
-import developerRoutes from "./routes/developer.route";
-import teamRoutes from "./routes/team.route";
-import hackathonRoutes from "./routes/hackathon.route";
-import organizerRoutes from "./routes/organizer.route";
-import internalRoutes from "./routes/internal.route";
-import errorMiddleware from "./middlewares/error.middleware";
+import userRoutes from "./routes/user.route.js";
+import developerRoutes from "./routes/developer.route.js";
+import teamRoutes from "./routes/team.route.js";
+import hackathonRoutes from "./routes/hackathon.route.js";
+import organizerRoutes from "./routes/organizer.route.js";
+import internalRoutes from "./routes/internal.route.js";
+import errorMiddleware from "./middlewares/error.middleware.js";
 
 const app = express();
 

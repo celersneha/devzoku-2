@@ -8,7 +8,7 @@ import {
   integer,
   json,
 } from "drizzle-orm/pg-core";
-import { users } from "./user.schema";
+import { users } from "./user.schema.js";
 
 export const organizers = pgTable("organizers", {
   id: uuid("id").primaryKey().defaultRandom(),

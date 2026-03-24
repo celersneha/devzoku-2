@@ -1,5 +1,5 @@
 import Router from "express";
-import { processEmailQueue } from "../controllers/internal.controller";
+import { processEmailQueue } from "../controllers/internal.controller.js";
 
 const router = Router();
 

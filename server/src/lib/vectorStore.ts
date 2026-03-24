@@ -1,5 +1,5 @@
 import { QdrantVectorStore } from "@langchain/qdrant";
-import { getEmbeddings } from "./embeddings";
+import { getEmbeddings } from "./embeddings.js";
 
 const initialiseVectorStore = async ({
   collectionName,

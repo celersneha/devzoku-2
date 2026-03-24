@@ -17,7 +17,7 @@ const sendEmail = async (
   fromName: string,
   toEmail: string,
   subject: string,
-  message: string
+  message: string,
 ) => {
   const mailOptions = {
     from: `"${fromName}" <${fromEmail}>`,

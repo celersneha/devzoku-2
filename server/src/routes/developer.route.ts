@@ -7,8 +7,8 @@ import {
   addProject,
   getRecommendedHackathons,
   deleteProject,
-} from "../controllers/developer.controller";
-import { verifyJWT } from "../middlewares/auth.middleware";
+} from "../controllers/developer.controller.js";
+import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 

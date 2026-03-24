@@ -9,7 +9,7 @@ import {
   json,
   jsonb,
 } from "drizzle-orm/pg-core";
-import { users } from "./user.schema";
+import { users } from "./user.schema.js";
 
 export const developers = pgTable("developers", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -39,7 +39,7 @@ export const developers = pgTable("developers", {
     }[]
   >(),
   overallScore: decimal("overall_score", { precision: 10, scale: 2 }).default(
-    "0.00"
+    "0.00",
   ),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),

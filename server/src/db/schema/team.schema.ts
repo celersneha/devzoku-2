@@ -8,7 +8,7 @@ import {
   integer,
   index,
 } from "drizzle-orm/pg-core";
-import { users } from "./user.schema";
+import { users } from "./user.schema.js";
 
 // Teams Table with Indexes
 export const teams = pgTable(
@@ -37,7 +37,7 @@ export const teams = pgTable(
     index("idx_teams_captain_id").on(t.captainId),
     index("idx_teams_created_by").on(t.createdBy),
     index("idx_teams_created_at").on(t.createdAt),
-  ]
+  ],
 );
 
 //  TeamMembers Table with Indexes
@@ -55,5 +55,5 @@ export const teamMembers = pgTable(
     primaryKey({ columns: [t.teamId, t.userId] }),
     index("idx_team_members_team_id").on(t.teamId),
     index("idx_team_members_user_id").on(t.userId),
-  ]
+  ],
 );

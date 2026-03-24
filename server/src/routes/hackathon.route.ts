@@ -7,9 +7,9 @@ import {
   markWinners,
   viewAllHackathons,
   viewHackathonById,
-} from "../controllers/hackathon.controller";
-import { verifyJWT } from "../middlewares/auth.middleware";
-import { upload } from "../utils/Cloudinary";
+} from "../controllers/hackathon.controller.js";
+import { verifyJWT } from "../middlewares/auth.middleware.js";
+import { upload } from "../utils/Cloudinary.js";
 
 const router = Router();
 

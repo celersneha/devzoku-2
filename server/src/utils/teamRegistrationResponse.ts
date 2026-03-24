@@ -1,6 +1,6 @@
-import { teamRegToHackathonTemplate } from "../templates/teamRegToHackathon";
-import transporter from "../utils/nodemailerUtility";
-import { hackathonResultAnnouncementTemplate } from "../templates/HackathonWinnerAnnouncement";
+import { teamRegToHackathonTemplate } from "../templates/teamRegToHackathon.js";
+import transporter from "../utils/nodemailerUtility.js";
+import { hackathonResultAnnouncementTemplate } from "../templates/HackathonWinnerAnnouncement.js";
 
 const sendTeamRegistrationEmail = async ({
   email,

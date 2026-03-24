@@ -1,28 +1,28 @@
 import { eq, and, inArray, sql, desc, gt, not, lt, or } from "drizzle-orm";
-import { db } from "../db";
-import { ApiResponse } from "../utils/ApiResponse";
-import { ApiError } from "../utils/ApiError";
-import { asyncHandler } from "../utils/asyncHandler";
-import { teamMembers, teams } from "../db/schema/team.schema";
-import { users } from "../db/schema/user.schema";
+import { db } from "../db/index.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+import { ApiError } from "../utils/ApiError.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { teamMembers, teams } from "../db/schema/team.schema.js";
+import { users } from "../db/schema/user.schema.js";
 import {
   hackathonPhases,
   hackathons,
   teamHackathons,
-} from "../db/schema/hackathon.schema";
-import { getHackathonTeamEmailQueue } from "../queues/queue";
-import formatDate from "../utils/formatDate";
-import { organizers } from "../db/schema/organizer.schema";
-import hackathonStatusChecker from "../utils/hackathonStatusChecker";
+} from "../db/schema/hackathon.schema.js";
+import { getHackathonTeamEmailQueue } from "../queues/queue.js";
+import formatDate from "../utils/formatDate.js";
+import { organizers } from "../db/schema/organizer.schema.js";
+import hackathonStatusChecker from "../utils/hackathonStatusChecker.js";
 import {
   userHackathonViews,
   userInteractions,
-} from "../db/schema/userInteraction.schema";
+} from "../db/schema/userInteraction.schema.js";
 
 import { Document } from "@langchain/core/documents";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
-import { initialiseVectorStore } from "../lib/vectorStore";
-import { developers } from "../db/schema/developer.schema";
+import { initialiseVectorStore } from "../lib/vectorStore.js";
+import { developers } from "../db/schema/developer.schema.js";
 
 // controller for applying to a hackathon with a team
 const applyToHackathon = asyncHandler(async (req, res) => {

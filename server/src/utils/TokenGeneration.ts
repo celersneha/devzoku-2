@@ -1,9 +1,9 @@
 import jwt from "jsonwebtoken";
 import type { SignOptions } from "jsonwebtoken";
 import { eq } from "drizzle-orm";
-import { db } from "../db/index";
-import { ApiError } from "./ApiError";
-import { users } from "../db/schema/user.schema";
+import { db } from "../db/index.js";
+import { ApiError } from "./ApiError.js";
+import { users } from "../db/schema/user.schema.js";
 
 // Define interfaces for both user types
 interface Developer {

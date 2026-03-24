@@ -1,12 +1,11 @@
 import jwt from "jsonwebtoken";
 import { eq } from "drizzle-orm";
 import { db } from "../db";
-import { developers } from "../db/schema/developer.schema";
-import { organizers } from "../db/schema/organizer.schema";
-import { ApiError } from "../utils/ApiError";
-import { asyncHandler } from "../utils/asyncHandler";
-import { refreshAccessToken } from "../controllers/user.controller";
-import { users } from "../db/schema/user.schema";
+import { developers } from "../db/schema/developer.schema.js";
+import { organizers } from "../db/schema/organizer.schema.js";
+import { ApiError } from "../utils/ApiError.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { users } from "../db/schema/user.schema.js";
 
 interface JwtPayload {
   id: string;
@@ -26,7 +25,7 @@ const verifyJWT = asyncHandler(async (req, res, next) => {
 
     const decoded = jwt.verify(
       token,
-      process.env.ACCESS_TOKEN_SECRET as string
+      process.env.ACCESS_TOKEN_SECRET as string,
     ) as JwtPayload;
 
     const { role, id } = decoded;

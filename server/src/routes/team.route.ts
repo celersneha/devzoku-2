@@ -9,8 +9,8 @@ import {
   fetchSentInvitations,
   leaveTeam,
   editTeam,
-} from "../controllers/team.controller";
-import { verifyJWT } from "../middlewares/auth.middleware";
+} from "../controllers/team.controller.js";
+import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
