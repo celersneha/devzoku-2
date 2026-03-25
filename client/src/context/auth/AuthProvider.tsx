@@ -20,30 +20,42 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
 
   const fetchUser = async () => {
-    try {
-      setLoading(true);
-      const res = await api.get("/users/current-user", {
-        withCredentials: true,
-      });
+    setLoading(true);
 
-      const { status, data, message } = res.data;
-      const userData = data;
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      try {
+        const res = await api.get("/users/current-user", {
+          withCredentials: true,
+        });
 
-      if (res.status === 200) {
-        setUser(userData);
-        setIsAuthenticated(true);
+        const userData = res.data?.data;
+
+        if (res.status === 200) {
+          setUser(userData);
+          setIsAuthenticated(true);
+          setLoading(false);
+          return;
+        }
+      } catch (error: any) {
+        const statusCode = error?.response?.status;
+        console.error(
+          "Error fetching user:",
+          error?.response?.data?.message || error,
+        );
+
+        // In production OAuth redirects, cookies may become available a moment later.
+        if (statusCode === 401 && attempt === 0) {
+          await new Promise((resolve) => setTimeout(resolve, 350));
+          continue;
+        }
+
+        break;
       }
-    } catch (error: any) {
-      console.error(
-        "Error fetching user:",
-        error?.response?.data?.message || error,
-      );
-      if (error?.response?.status === 401) {
-        setUser(null);
-      }
-    } finally {
-      setLoading(false);
     }
+
+    setUser(null);
+    setIsAuthenticated(false);
+    setLoading(false);
   };
 
   const handleLogout = async () => {
