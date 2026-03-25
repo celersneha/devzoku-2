@@ -4,26 +4,12 @@ import React, { useEffect } from "react";
 import { LogIn } from "lucide-react";
 
 const Login = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-
   const handleGoogleLoginForDeveloper = () => {
-    if (!API_BASE_URL) {
-      alert(
-        "API_BASE_URL is not set. Please check your environment variables."
-      );
-      return;
-    }
-    window.location.href = `${API_BASE_URL}/developer/authorization/auth/google`;
+    window.location.href = `/api/developer/authorization/auth/google`;
   };
 
   const handleGoogleLoginForOrganizer = () => {
-    if (!API_BASE_URL) {
-      alert(
-        "API_BASE_URL is not set. Please check your environment variables."
-      );
-      return;
-    }
-    window.location.href = `${API_BASE_URL}/organizer/authorization/auth/google`;
+    window.location.href = `/api/organizer/authorization/auth/google`;
   };
 
   const { user } = useAuth();

@@ -5,8 +5,7 @@ import axios, {
   AxiosRequestConfig,
 } from "axios";
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
 // Create axios instance
 const api: AxiosInstance = axios.create({
@@ -52,7 +51,7 @@ api.interceptors.response.use(
         const res = await api.post(
           `/users/refresh-token`,
           {},
-          { withCredentials: true }
+          { withCredentials: true },
         );
 
         return api(originalRequest);
@@ -67,7 +66,7 @@ api.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;
