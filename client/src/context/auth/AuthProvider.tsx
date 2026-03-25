@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     } catch (error: any) {
       console.error(
         "Error fetching user:",
-        error?.response?.data?.message || error
+        error?.response?.data?.message || error,
       );
       if (error?.response?.status === 401) {
         setUser(null);
@@ -76,22 +76,37 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    if (user && user.id) {
-      socket.emit("join", user.id);
-      if (user.role === "developer") {
-        socket.on("invitation-accepted", (notification: Notification) => {
-          toast(notification.message);
-          setRedBadge(true);
-          setNotifications((prev) => [notification, ...(prev ?? [])]);
-        });
-
-        socket.on("new-invitation", (notification: Notification) => {
-          toast(notification.message);
-          setRedBadge(true);
-          setNotifications((prev) => [notification, ...(prev ?? [])]);
-        });
-      }
+    if (!socket || !user?.id) {
+      return;
     }
+
+    const activeSocket = socket;
+
+    activeSocket.emit("join", user.id);
+
+    if (user.role !== "developer") {
+      return;
+    }
+
+    const onInvitationAccepted = (notification: Notification) => {
+      toast(notification.message);
+      setRedBadge(true);
+      setNotifications((prev) => [notification, ...(prev ?? [])]);
+    };
+
+    const onNewInvitation = (notification: Notification) => {
+      toast(notification.message);
+      setRedBadge(true);
+      setNotifications((prev) => [notification, ...(prev ?? [])]);
+    };
+
+    activeSocket.on("invitation-accepted", onInvitationAccepted);
+    activeSocket.on("new-invitation", onNewInvitation);
+
+    return () => {
+      activeSocket.off("invitation-accepted", onInvitationAccepted);
+      activeSocket.off("new-invitation", onNewInvitation);
+    };
   }, [user]);
 
   useEffect(() => {
@@ -107,7 +122,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       router.replace(
         user.role === "developer"
           ? "/developer/complete-profile"
-          : "/organizer/complete-profile"
+          : "/organizer/complete-profile",
       );
     }
   }, [user, loading, pathname, router]);
