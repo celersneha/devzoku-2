@@ -9,7 +9,7 @@ import {
   json,
   jsonb,
 } from "drizzle-orm/pg-core";
-import { users } from "./user.schema";
+import { users } from "./user.schema.js";
 
 export const developers = pgTable("developers", {
   id: uuid("id").primaryKey().defaultRandom(),

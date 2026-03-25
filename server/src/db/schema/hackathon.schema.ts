@@ -11,8 +11,8 @@ import {
   jsonb,
 } from "drizzle-orm/pg-core";
 
-import { teams } from "./team.schema";
-import { users } from "./user.schema";
+import { teams } from "./team.schema.js";
+import { users } from "./user.schema.js";
 
 export const modeSchemaEnum = ["online", "offline"] as const;
 
