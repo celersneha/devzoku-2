@@ -45,6 +45,17 @@ const origins = (process.env.CORS_ORIGIN || "http://localhost:3000")
   .map((o) => o.trim())
   .filter(Boolean);
 
+const isProduction = process.env.NODE_ENV === "production";
+const getCookieOptions = () => {
+  const sameSite: "none" | "lax" = isProduction ? "none" : "lax";
+
+  return {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite,
+  };
+};
+
 const baseOrigin = origins[0] || "http://localhost:3000";
 
 // Determine user role based on request path
@@ -196,11 +207,7 @@ const signUpWithGoogle = asyncHandler(async (req, res) => {
 
   let redirectPath = "";
 
-  const options = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax" as const,
-  };
+  const options = getCookieOptions();
 
   if (existingUsers.length === 0) {
     // New user: redirect to complete profile
@@ -288,11 +295,7 @@ const logoutUser = asyncHandler(async (req, res) => {
   // Clear refresh token
   await db.update(users).set({ refreshToken: null }).where(eq(users.id, id));
 
-  const options = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict" as const,
-  };
+  const options = getCookieOptions();
 
   return res
     .status(200)
@@ -355,11 +358,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     }
 
     // Set cookies
-    const options = {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax" as const,
-    };
+    const options = getCookieOptions();
 
     res
       .cookie("AccessToken", accessToken, {
