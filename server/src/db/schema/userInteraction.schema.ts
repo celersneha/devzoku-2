@@ -7,8 +7,8 @@ import {
   boolean,
   json,
 } from "drizzle-orm/pg-core";
-import { hackathons, modeSchemaEnum } from "./hackathon.schema.js";
-import { users } from "./user.schema.js";
+import { hackathons, modeSchemaEnum } from "./hackathon.schema";
+import { users } from "./user.schema";
 
 const interactionTypeEnum = ["view", "search", "register"] as const;
 
@@ -16,7 +16,7 @@ export const userInteractions = pgTable("user_interactions", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id")
     .notNull()
-    .references(() => users.id),
+    .references(() => users.id, { onDelete: "cascade" }),
   hackathonTagsSearchedFor: varchar("hackathon_tags_searched_for").array(),
   hackathonsRegisteredTags: varchar("hackathons_registered_tags").array(),
   preferredDuration: varchar("preferred_duration", {
@@ -36,8 +36,12 @@ export const userInteractions = pgTable("user_interactions", {
 
 export const userHackathonViews = pgTable("user_hackathon_views", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id").notNull(),
-  hackathonId: uuid("hackathon_id").notNull(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  hackathonId: uuid("hackathon_id")
+    .notNull()
+    .references(() => hackathons.id, { onDelete: "cascade" }),
   viewedAt: timestamp("viewed_at").defaultNow(),
 });
 

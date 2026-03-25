@@ -9,14 +9,14 @@ import {
   json,
   jsonb,
 } from "drizzle-orm/pg-core";
-import { users } from "./user.schema.js";
+import { users } from "./user.schema";
 
 export const developers = pgTable("developers", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id")
     .notNull()
     .unique()
-    .references(() => users.id),
+    .references(() => users.id, { onDelete: "cascade" }),
   title: varchar("title", { length: 100 }),
   bio: text("bio"),
   skills: text("skills").array(),

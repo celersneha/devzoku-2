@@ -1,9 +1,9 @@
 import { relations } from "drizzle-orm";
-import { users } from "./user.schema.js";
-import { teams } from "./team.schema.js";
-import { teamMembers } from "./team.schema.js";
-import { hackathonPhases, hackathons } from "./hackathon.schema.js";
-import { teamHackathons } from "./hackathon.schema.js";
+import { users } from "./user.schema";
+import { teams } from "./team.schema";
+import { teamMembers } from "./team.schema";
+import { hackathonPhases, hackathons } from "./hackathon.schema";
+import { teamHackathons } from "./hackathon.schema";
 
 export const teamsRelations = relations(teams, ({ many }) => ({
   members: many(teamMembers),

@@ -8,7 +8,7 @@ import {
   integer,
   index,
 } from "drizzle-orm/pg-core";
-import { users } from "./user.schema.js";
+import { users } from "./user.schema";
 
 // Teams Table with Indexes
 export const teams = pgTable(

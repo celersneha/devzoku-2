@@ -8,14 +8,14 @@ import {
   integer,
   json,
 } from "drizzle-orm/pg-core";
-import { users } from "./user.schema.js";
+import { users } from "./user.schema";
 
 export const organizers = pgTable("organizers", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id")
     .notNull()
     .unique()
-    .references(() => users.id),
+    .references(() => users.id, { onDelete: "cascade" }),
   organizationName: varchar("organization_name", { length: 150 }),
   bio: text("bio"),
   website: varchar("website", { length: 255 }),
